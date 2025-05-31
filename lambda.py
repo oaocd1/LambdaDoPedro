@@ -3,8 +3,9 @@ import datetime
 
 def lambda_handler(event, context):
     try:
-        nome = event.get('nome', 'Visitante') 
-    except AttributeError:
+        body = json.loads(event.get("body", "{}"))
+        nome = body.get('nome', 'Visitante')
+    except Exception as e:
         nome = 'Visitante (entrada inválida)'
 
     agora = datetime.datetime.now()
@@ -23,23 +24,12 @@ def lambda_handler(event, context):
     print(f"Saudação gerada: {mensagem_saudacao}")
 
     return {
-        'statusCode': 200, 
+        'statusCode': 200,
         'body': json.dumps({
             'saudacao': mensagem_saudacao,
             'horario_processamento': str(agora)
-        })
+        }),
+        'headers': {
+            'Content-Type': 'application/json'
+        }
     }
-
-#teste de função lambda
-# if __name__ == '__main__':
-
-#     evento_teste_com_nome = {'nome': 'Aluno'}
-#     evento_teste_sem_nome = {}
-#     evento_teste_invalido = "Teste"
-
-#     print("--- Teste com nome ---")
-#     print(lambda_handler(evento_teste_com_nome, None))
-#     print("\n--- Teste sem nome ---")
-#     print(lambda_handler(evento_teste_sem_nome, None))
-#     print("\n--- Teste com entrada inválida ---")
-#     print(lambda_handler(evento_teste_invalido, None))
